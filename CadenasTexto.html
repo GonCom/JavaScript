@@ -1,0 +1,47 @@
+<html>
+<head>
+<title>CADENAS DE TEXTO</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+</head>
+<body>
+	<script type="text/javascript">
+		var cadena = prompt("Inserta una cadena: ");
+		//EN NEGRITA
+		document.write("Cadena en  negrita:     "+cadena.bold());
+		document.write("<br>");
+		//CAMBIOS DE TAMAÑO
+		document.write("Cadena en  tamaño 1:     "+cadena.fontsize(12));
+		document.write("<br>");
+		document.write("Cadena en  tamaño 2:     "+cadena.fontsize(5));
+		document.write("<br>");
+		//CAMBIO A MAYÚSCULAS
+		document.write("Cadena en  mayúsculas:     "+cadena.toUpperCase(5));		
+		document.write("<br>");
+		//EXTRAER CADENA
+		var carac1=cadena.substring(0,1);
+		document.write("El primer caracter es:   "+carac1);
+		document.write("<br>");
+		//ULTIMO CARACTER
+		var carac2=cadena.substring((cadena.length-1),cadena.length);
+		document.write("El último caracter es:   "+carac2);			
+		document.write("<br>");
+		//BUSCAR PALABRAS (se puede hacer con match)   NO ME SALE BIEN
+		var palabraBuscar=prompt("Indica lo que quieres buscar en la cadena:");
+		var encontrados=(cadena.match(palabraBuscar));
+		document.write("La frase contine la letra:   "+encontrados);	
+		document.write("<br>");
+		//REEMPLAZAR PALABRAS
+		var palabravieja=prompt("Indica palabra que quieres eliminar temporalemente:");
+		var palabranueva=prompt("Indica palabra nueva:");
+		var cadena2=cadena.replace(palabravieja,palabranueva)
+		document.write("La cadena cambiada temporalemente es: "+cadena2);
+		document.write("<br>");
+		//EXTRAER CADENA
+		var numI=prompt("Indica desde donde quieres extraer la cadena (numero):");
+		var numF=prompt("Indica hasta donde quieres extraer la cadena (numero):");
+		var nuevaCadena=cadena.substring((numI-1),(numF));
+		document.write("La cadena extraida es: "+nuevaCadena);
+		document.write("<br>");
+	</script>
+</body>
+</html>

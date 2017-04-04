@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title></title>
+	<link rel="stylesheet" href="">
+    <style type="text/css">
+    #facturas {
+        margin-top: -175px;
+        margin-left: 400px;
+    }
+
+    caption {
+        font-size: 40px;
+        font-style: bold;
+    }
+
+    #formulario{
+        margin-left: 150px;
+        margin-top: 10px;
+        width: 80%;
+        text-align: center;
+    }
+    #formulario2{
+        width: 100%;
+        text-align: center;
+    }
+    #lis {
+        margin-left: 600px;
+    }
+    #importetotal {
+        position: relative;
+        text-align: center;
+        margin-left: 535px;
+    }
+    #importetotal2 {
+        position: relative;
+        text-align: center;
+        margin-left: 1000px;
+    }
+
+    </style>
+    <script type="text/javascript">
+    var indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
+    var dataBase = null;
+    var nameDB = "practica8.1";
+    var db;
+
+    //Funcion para crear la Base de Datos
+    function startDB() {
+       dataBase = indexedDB.open(nameDB, 1);
+
+       dataBase.onupgradeneeded = function (e) {
+        var active = dataBase.result;
+
+        var objectCliente = active.createObjectStore("clientes", { keyPath : 'codcliente'});
+        objectCliente.createIndex('by_nombre', 'nombre', { unique : false });
+        objectCliente.createIndex('by_dni', 'dni', { unique : true });
+        objectCliente.createIndex('by_direccion', 'direccion', { unique : false });
+
+        var objectFactura = active.createObjectStore("facturas", { keyPath : 'codfactura'});
+        objectFactura.createIndex('by_fecha', 'fecha', { unique : false });
+        objectFactura.createIndex('by_codclientef', 'codclientef', { unique : false });
+        objectFactura.createIndex('by_importe', 'importe', { unique : false });
+    };
+
+    dataBase.onsuccess = function (e) {
+        alert('Base de datos cargada correctamente');
+        
+    };
+    dataBase.onerror = function (e)  {
+        alert('Error cargando la base de datos');
+    };
+}
+
+//Funcion para añadir cliente
+function addCliente() {
+    var active = dataBase.result;
+    var data = active.transaction(["clientes"], "readwrite");
+    var object = data.objectStore("clientes");
+
+    var request = object.put({
+        codcliente: document.querySelector("#codcliente").value,
+        nombre: document.querySelector("#nombre").value,
+        dni: document.querySelector("#dni").value,
+        direccion: document.querySelector("#direccion").value
+    });
+
+    request.onerror = function (e) {
+        alert(request.error.name + '\n\n' + request.error.message);
+    };
+
+    data.oncomplete = function (e) {
+        document.querySelector("#codcliente").value = '';
+        document.querySelector("#nombre").value = '';
+        document.querySelector("#dni").value = '';
+        document.querySelector("#direccion").value = '';
+        alert('Cliente agregado correctamente');
+    };              
+}
+
+//Funcion para añadir factura
+function addFactura() {
+    var active = dataBase.result;
+    var data = active.transaction(["facturas"], "readwrite");
+    var object = data.objectStore("facturas");
+
+    var request = object.put({
+        codfactura: document.querySelector("#codfactura").value,
+        fecha: document.querySelector("#fecha").value,
+        codclientef: document.querySelector("#codclientef").value,
+        importe: document.querySelector("#importe").value
+    });
+
+    request.onerror = function (e) {
+        alert(request.error.name + '\n\n' + request.error.message);
+    };
+
+    data.oncomplete = function (e) {
+        document.querySelector("#codfactura").value = '';
+        document.querySelector("#fecha").value = '';
+        document.querySelector("#codclientef").value = '';
+        document.querySelector("#importe").value = '';
+        alert('Factura agregado correctamente');
+    };              
+}
+
+//Funcion para Listar Clientes
+function listarClientes() {
+   var active = dataBase.result;
+   var data = active.transaction(["clientes"], "readonly");
+   var object = data.objectStore("clientes");
+
+   var elements = [];
+
+   object.openCursor().onsuccess = function (e) {
+
+    var result = e.target.result;
+
+    if (result === null) {
+        return;
+    }
+
+    elements.push(result.value);
+    result.continue();
+
+};
+
+data.oncomplete = function () {
+
+    var outerHTML = '';
+
+    for (var key in elements) {
+
+        outerHTML += '\n\
+        <tr>\n\
+        <td align="center">' + elements[key].codcliente + '</td>\n\
+        <td align="center">' + elements[key].nombre + '</td>\n\
+        <td align="center">' + elements[key].dni + '</td>\n\
+        <td align="center">' + elements[key].direccion + '</td>\n\
+        <td colspan="2">' + '<button type="button" onclick="listarFactura(' + elements[key].codcliente + ');">Listar Facturas</button>' + '<button type="button" onclick="modificarCliente();">Modificar</button>' + '<button type="button" onclick="eliminarRegistro(' + elements[key].codcliente +');">Eliminar</button>' + '</td>\n\
+        </tr>';
+
+    }
+
+    elements = [];
+    document.querySelector("#elementsList").innerHTML = outerHTML;
+};
+}
+
+//Borrar Base de Datos
+function borrarDB(){
+    window.indexedDB = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.msIndexedDB;
+    var request = indexedDB.deleteDatabase(nameDB);
+    console.log("done");
+    alert("La base de datos ha sido borrada");
+}
+
+//Funcion para Facturas de un Cliente
+function listarFactura(codcliente) {
+   var active = dataBase.result;
+   var data = active.transaction(["facturas"], "readonly");
+   var object = data.objectStore("facturas");
+
+   var elements = [];
+
+   object.openCursor().onsuccess = function (e) {
+
+    var result = e.target.result;
+
+    if (result === null) {
+        return;
+    }
+
+    elements.push(result.value);
+    result.continue();
+
+};
+
+data.oncomplete = function () {
+
+    var outerHTML = '';
+     var total=0;
+
+    for (var key in elements) { 
+        if(elements[key].codclientef == codcliente){
+            total = parseFloat(total) + parseFloat(elements[key].importe);
+            outerHTML += '\n\
+        <tr>\n\
+        <td align="center">' + elements[key].codfactura + '</td>\n\
+        <td align="center">' + elements[key].fecha + '</td>\n\
+        <td align="center">' + elements[key].codclientef + '</td>\n\
+        <td align="center">' + elements[key].importe + '€' + '</td>\n\
+        </tr>';
+        
+        }
+    }
+
+
+    elements = [];
+    document.querySelector("#elementsList2").innerHTML = outerHTML;
+    document.querySelector("#importetotal2").innerHTML ="<strong>Importe Total: </strong>"+ total + "€" ;
+};
+}
+
+
+//Funcion para Listar Facturas por Codigo de Factura
+function listarFacturasCod(e) {
+    var codfactura = prompt("Introduce el codigo de factura que quieres buscar:");
+    if(codfactura === "" ) return;
+
+    var active = dataBase.result;
+    var data = active.transaction(["facturas"], "readonly");
+    var object = data.objectStore("facturas");
+
+    var request = object.get(String(codfactura));
+
+    request.onsuccess = function(e) {
+
+        var result = request.result;
+        if(result) {
+            var s = '<div id="lis"><h2>Factura '+codfactura+'</h2>'+
+                    'Codigo Factura: ' + codfactura + '<br>' +
+                    'Fecha: ' + result.fecha + '<br>' +
+                    'Codigo Cliente: ' + result.codclientef + '<br>' +
+                    'Importe: ' + result.importe;
+
+            document.querySelector("#status").innerHTML = s + "</div>";
+        } else {
+            document.querySelector("#status").innerHTML = "<h2>No se encuentra la factura que buscas</h2> </div>";
+        }   
+    }   
+
+
+}
+
+//Funcion para Listar Facturas en la misma pagina
+function listarFacturas(e) {
+ var active = dataBase.result;
+ var data = active.transaction(["facturas"], "readonly");
+ var object = data.objectStore("facturas");
+
+ var elements = [];
+
+ object.openCursor().onsuccess = function (e) {
+
+    var result = e.target.result;
+
+    if (result === null) {
+        return;
+    }
+
+    elements.push(result.value);
+    result.continue();
+
+};
+
+data.oncomplete = function () {
+
+    var outerHTML = '';
+    var total=0;
+
+
+    for (var key in elements) {
+        total = parseFloat(total) + parseFloat(elements[key].importe);
+
+        outerHTML += '\n\
+        <tr id="formcli">\n\
+        <td align="center">' + elements[key].codfactura +'</td>\n\
+        <td align="center">' + elements[key].fecha + '</td>\n\
+        <td align="center">' + elements[key].codclientef + '</td>\n\
+        <td align="center">' + elements[key].importe + '€ ' + '</td>\n\
+        <td colspan="2">' + '<button type="button" onclick="eliminarRegistroFactura(' + elements[key].codfactura + ');">Eliminar Factura</button>' + '</td>\n\
+        </tr>';
+    }
+
+    elements = [];
+
+        
+    document.querySelector("#elements2").innerHTML = outerHTML;
+    document.querySelector("#importetotal").innerHTML ="<strong>Importe Total: </strong>"+ total + "€" ;
+};
+}
+
+//Funcion para Eliminar un Cliente
+function eliminarRegistro(codcliente) {
+   var codcliente = prompt("Introduce el codigo de cliente que deseas eliminar:");
+   var active = dataBase.result;
+   var data = active.transaction(["clientes"], "readwrite");
+   var object = data.objectStore("clientes");
+
+   var del = object.delete(codcliente);
+   del.onsuccess = function (evt) {
+    console.log("Eliminado");
+    alert("Cliente eliminado correctamente")
+    };
+
+}
+
+//Funcion para Eliminar una Factura
+function eliminarRegistroFactura(codfactura) {
+   var codfacturas = prompt("Introduce el codigo de factura que deseas eliminar:");
+   var active = dataBase.result;
+   var data = active.transaction(["facturas"], "readwrite");
+   var object = data.objectStore("facturas");
+
+   var del = object.delete(codfacturas);
+   del.onsuccess = function (evt) {
+    console.log("Eliminado");
+    alert("Factura eliminado correctamente")
+    };
+
+}
+
+/*
+//Modificar Cliente
+function modificarCliente(e) {
+
+}
+*/
+</script>
+</head>
+<body onload="startDB();">
+    <div align="left">
+        <table id="clientes">
+                    <tbody>
+                        <caption>Clientes:</caption>
+                        <tr align="right">
+                            <th>Codigo Cliente:</th>
+                            <td align="right"><input type="text" id="codcliente" placeholder="Introducir codigo cliente" /></td>
+                        </tr>
+                        <tr align="right">
+                            <th>Nombre:</th>
+                            <td><input type="text" id="nombre" placeholder="Introducir nombre" /></td>
+                        </tr>
+                        <tr align="right">
+                            <th>DNI:</th>
+                            <td><input type="text" id="dni" placeholder="Introducir dni" /></td>
+                        </tr>
+                        <tr align="right">
+                            <th>Dirección:</th>
+                            <td><input type="text" id="direccion" placeholder="Introducir direccion" /></td>
+                        </tr>
+                        <tr>
+                            <td colspan="3"><button type="button" onclick="addCliente();">Guardar</button> <button type="button" name="" onclick="listarClientes();">Listar</button><button type="button" name="" onclick="borrarDB();">Eliminar BD</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            
+             <table id="facturas">
+                <thead>
+                    <caption>Facturas:</caption>
+                    <tr align="right">
+                        <th>Codigo Factura:</th>
+                        <td align="right"><input type="text" id="codfactura" placeholder="Introducir codigo factura" /></td>
+                    </tr>
+                    <tr align="right">
+                        <th> Fecha:</th>
+                        <td><input type="text" id="fecha" placeholder="Introducir fecha" /></td>
+                    </tr>
+                    <tr align="right">
+                        <th>Codigo Cliente:</th>
+                        <td><input type="text" id="codclientef" placeholder="Introducir codigo cliente" /></td>
+                    </tr>
+                    <tr align="right">
+                        <th>Importe:</th>
+                        <td><input type="text" id="importe" placeholder="Introducir importe" /></td>
+                    </tr>
+                    <tr>
+                        <td colspan="3"><button type="button" onclick="addFactura();">Guardar</button> <button type="button" onclick="listarFacturas();">Listar Facturas</button> <button type="button" name="" onclick="borrarDB();">Eliminar BD</button> <button type="button" onclick="listarFacturasCod();">Listar Facturas x Cod</button></td>
+                    </tr>
+                </thead>
+            </table>
+        <hr>
+        <div id="elements">
+            <table id="formulario">
+                <caption>Listado Clientes</caption>
+                <thead>
+                    <tr>
+                        <th>Codigo:</th>
+                        <th>Nombre:</th>
+                        <th>DNI:</th>
+                        <th>Direccion:</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="elementsList">
+                    <tr align="center">
+                        <td colspan="4">Sin elementos</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <hr>
+        <div>
+            <table id="formulario2">
+                <caption>Listado Facturas</caption>
+                <thead>
+                    <tr>
+                        <th>Codigo Factura:</th>
+                        <th>Fecha:</th>
+                        <th>Codigo Cliente:</th>
+                        <th>Importe:</th>
+                    </tr>
+                </thead>
+                <tbody id="elements2">
+                    <tr align="center">
+                        <td colspan="4">Sin elementos</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <br>
+        <div id="importetotal"></div>
+        <hr>
+        <div>
+            <table id="formulario2">
+                <caption>Listado Facturas de Clientes</caption>
+                <thead>
+                    <tr>
+                        <th>Codigo Factura:</th>
+                        <th>Fecha:</th>
+                        <th>Codigo Cliente:</th>
+                        <th>Importe:</th>
+                    </tr>
+                </thead>
+                <tbody id="elementsList2">
+                    <tr align="center">
+                        <td colspan="4">Sin elementos</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <br>
+        <div id="importetotal2"></div>
+        <br>
+        <div id="status"></div>
+        
+</div> 
+</body>
+</html>

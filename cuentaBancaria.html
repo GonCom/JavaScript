@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Cuenta Bancaria</title>
+	<link rel="stylesheet" href="">
+</head>
+<body>
+	<script type="text/javascript">
+function cuentaBancaria(cc,nom,sald) {
+   this.codigoCliente = cc;
+   this.nombre = nom;
+   this.saldo = Number(sald);
+   this.ingresar = ingresar;
+   this.retirar = retirar;
+   this.mostrarSaldo = mostrarSaldo;   
+   document.write("Cuenta de " + this.nombre + " creada con saldo: " + this.saldo + "<br>");
+}
+
+function mostrarSaldo(saldo){
+     if (saldo>=0) {
+		document.write("El saldo actual es " + saldo + " €<br>");
+	 }
+	 else {
+	    document.write("<span style='font-size:20px; color:red'>Atención: el saldo actual es " + saldo + " €</span><br>");
+	 }
+}
+
+function ingresar(cuenta,saldo,cant) {
+    cuenta.saldo += Number(cant);
+	document.write("--\> has ingresado " + cant + " €<br>");
+	cuenta.mostrarSaldo(cuenta.saldo);
+}
+
+function retirar(cuenta,saldo,cant) {
+    cuenta.saldo -= Number(cant);
+	document.write("--\> has sacado " + cant + " €<br>");
+	cuenta.mostrarSaldo(cuenta.saldo);
+}
+
+//probar
+var miCuenta = new cuentaBancaria("GGG","Gonzalo",500);
+
+var nuevoIngreso = 0;
+var nuevaRetirada = 0;
+
+while(isFinite(nuevoIngreso) && isFinite(nuevaRetirada)) {
+   nuevoIngreso = prompt("Introduzca la cantidad a ingresar: ");
+   if (isFinite(nuevoIngreso)) {
+   miCuenta.ingresar(miCuenta, miCuenta.saldo, nuevoIngreso);
+   
+   nuevaRetirada = prompt("Introduzca la cantidad a sacar: ");
+   if (isFinite(nuevaRetirada)) {
+	   miCuenta.retirar(miCuenta, miCuenta.saldo, nuevaRetirada);
+	   }
+   }
+}
+
+</script>
+</body>
+</html>

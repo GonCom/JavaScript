@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+		<title>Fechas</title>
+	</head>
+	<body>
+
+		<script type="text/javascript">
+			var fechaNac = new Date(1992,12,5);
+			var fechaActual = new Date();
+			
+			document.write("<b>FECHA ACTUAL:</b>  " + fechaActual);
+			document.write("<br><b>FECHA NACIMIENTO:</b>  " + fechaNac);
+			document.write("<br><br><b>AÑO ACTUAL:</b>  " + fechaActual.getFullYear());
+			document.write("<br><b>AÑO NACIMIENTO:</b>  " + fechaNac.getFullYear());
+			fechaActual.setFullYear(2010);
+			document.write("<br><br><b>DIA ACTUAL AÑO 2010:</b> " + fechaActual.toLocaleDateString());
+			fechaActual = new Date();
+			var ms = fechaActual - fechaNac;
+			var sec = ms / 1000;
+			var min = sec / 60;
+			var hora = min / 60;
+			var dias = hora / 24;
+			dias = Math.round(dias * 1) / 1;
+			document.write("<br><br><b>DIAS ENTRE NACIMIENTO Y FECHA ACTUAL:</b>  " + dias);
+		</script>
+
+	</body>
+</html>

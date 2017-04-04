@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>Ejercicio 5.2</title>
+		<script type="text/javascript">
+			document.onclick = function(event){
+				var x = event.clientX;
+    			var y = event.clientY;
+    			document.getElementById("x").value = x;
+    			document.getElementById("y").value = y;
+			}
+		</script>
+	</head>
+	<body document.onclick="coordenadas(event);">
+		<h2>Ejercicio 5.2</h2>
+		<p>Haz click en cualquier parte de la ventana.</p>
+		<p>Coordenada X: <input type="text" id="x" value"" /> Coordenada Y: <input type="text" id="y" value"" /></p>
+	</body>
+</html>
