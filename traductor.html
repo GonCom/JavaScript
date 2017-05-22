@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Conversor de texto</title>
+	<link rel="stylesheet" href="">
+</head>
+<body>
+	<script type="text/javascript" charset="utf-8">
+		var inputs = ['A', 'B', 'E', 'I', 'L', 'M', 'N', 'O', 'S', 'T', 'V', 'W', '4', '6', '3', '1', '(V)', '(\\)', '0', '5', '7', '\/', "'//", "."];
+		var outputs = ['4', '6', '3', '1', '1', '(V)', '(\\)', '0', '5', '7', '\/', "'//", 'A', 'B', 'E', 'I', 'M', 'N', 'O', 'S', 'T', 'V', 'W', ""];
+
+function traductor(frase) {
+        var original = frase;
+  frase = frase.toUpperCase();
+  var arr = frase.split("");
+  for (var i = 0; i < frase.length; i++) {
+    var inputIndex = inputs.indexOf(arr[i]);
+    if (inputIndex != -1) {
+      arr[i] = outputs[inputIndex];
+    }
+  }
+  frase = arr.join("");
+  frase = original + " -> " + frase;
+  return frase;
+}
+console.log(traductor("Hello World"));
+console.log(traductor("Hola mundo"));
+console.log(traductor("Voy a comprar un coche"));
+console.log(traductor("Creo que estoy malo"));
+console.log(traductor("1 n33d m4 p1llz!"));
+	</script>
+</body>
+</html>
